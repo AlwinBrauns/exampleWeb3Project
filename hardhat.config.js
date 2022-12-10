@@ -5,5 +5,10 @@ module.exports = {
   solidity: "0.8.17",
   paths: {
     artifacts: './examplefrontend/src/artifacts'
-  }
+  },
+  networks: {
+    hardhat: {
+      chainId: 1337,
+    }
+ }
 };

@@ -1,0 +1,35 @@
+:host {
+    display: grid;
+    place-items: center;
+    font-family: Arial, Helvetica, sans-serif;
+    color: rgb(236, 244, 255);
+    h1 {
+        font-size: 4rem;
+    }
+    form {
+        display: flex;
+        flex-direction: column;
+
+        input, button{
+            padding: 1rem;
+            margin: 0.5rem;
+            border-radius: 10px;
+            background-color: rgba(255, 255, 255, 0.801);
+            color: rgb(41, 43, 45);
+            font-size: 1rem;
+            font-weight: bold;
+            transition: 0.2s all ease-in-out;
+            border: none;
+            &:hover {
+                background-color: white;
+                cursor: pointer;
+            }
+            &:focus {
+                outline: 1px dashed white;
+            }
+        }
+        input:hover {
+            cursor: text;    
+        }
+    }
+}
