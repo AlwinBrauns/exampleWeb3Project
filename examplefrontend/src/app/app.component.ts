@@ -1,8 +1,6 @@
-import { Component } from '@angular/core';
-import Web3 from 'web3';
-import SayHelloTo from '../artifacts/contracts/SayHelloTo.sol/SayHelloTo.json'
-import Addresses from '../adresses.json'
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Validators, FormGroup, FormControl} from '@angular/forms';
+import { Web3conService } from './services/web3con.service';
 
 
 @Component({
@@ -10,60 +8,54 @@ import { Validators, FormGroup, FormControl} from '@angular/forms';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
-  web3?: Web3
+export class AppComponent implements OnInit, OnDestroy {
   title?: string 
-  contract?: any
-  error?: Error
   from?: string
+  error?: Error
+ 
   changeTo: FormGroup = new FormGroup({
     to: new FormControl('')
   })
-  constructor() { 
+  constructor(private web3conService: Web3conService) { 
     this.changeTo.controls['to'].setValidators([
       Validators.required
     ])
-    this.initWeb3()
+    this.getSayHello()
+  }
+  connectWithWeb3Wallet() {
+    this.web3conService.setErrorFixed()
+    this.web3conService.initWeb3()
+  }
+  ngOnInit(): void {
+    this.web3conService.getError().subscribe(
+      error => {
+        this.error = error
+      }
+    )
+  }
+  ngOnDestroy(): void {
+  }
+  getSayHello() {
+    this.web3conService.callSayHello().then((msg: string) => {
+      this.title = msg;
+    }).catch(error => {
+      this.error = error
+    })
   }
   onChangeTo() {
     if(this.changeTo.controls['to'].valid && this.changeTo.controls['to'].value.length === 1) {
       this.changeTo.controls['to'].setValue(this.changeTo.controls['to'].value.toUpperCase())
     }
   }
-  async callSayHello() {
-    const Contract = this.web3!.eth.Contract
-    //@ts-ignore
-    this.contract = new Contract(SayHelloTo.abi, Addresses.sayHelloTo)
-    this.contract.methods.sayHello().call().then((message:string)=> {
-      this.title = message
-    })
-  }
-  async sendChangeTo() {
+  sendChangeTo() {
     if(this.changeTo.controls['to'].valid) {
-      const Contract = this.web3!.eth.Contract
-      //@ts-ignore
-      this.contract = new Contract(SayHelloTo.abi, Addresses.sayHelloTo)
-      this.contract.methods.changeTo(this.changeTo.controls['to'].value).send({
-        from: this.from
-      }).on('receipt', () => {
-        this.callSayHello()
-      })
-    } else {
+      this.web3conService.sendChangeTo(
+        this.changeTo.controls['to'].value,
+        () => this.getSayHello()
+      )
+    }else {
       console.warn("Invalid Input")
     }
   }
-  async initWeb3() {
-      //@ts-ignoreany
-      this.web3 = new Web3(window.ethereum)
-      this.web3.eth.requestAccounts().then(accs => {
-        this.error = undefined
-        this.title = accs[0]
-        this.from = accs[0]
-        this.callSayHello()
-      }).catch(error => {
-        this.error = error
-      })
-      
-  }
-  
+
 }

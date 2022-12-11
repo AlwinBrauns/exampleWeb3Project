@@ -1,8 +1,8 @@
 <h1>{{title}}</h1>
 <h1 *ngIf="!title">Try to connect with Wallet...</h1>
-<div *ngIf="error">
-    <h1>{{error.message}}</h1>
-    <button (click)="initWeb3()">Retry</button>
+<div class="error" *ngIf="error">
+    <h2>{{error.message}}</h2>
+    <button (click)="connectWithWeb3Wallet()">Retry</button>
 </div>
 <form [formGroup]="changeTo" (ngSubmit)="sendChangeTo()">
     <input formControlName="to" (input)="onChangeTo()" type="text" name="to" id="to"/>

@@ -4,4 +4,27 @@ body {
         color: rgb(51, 153, 104);
         background: rgb(176, 227, 208);
     }
+
+    input, button{
+        padding: 1rem;
+        margin: 0.5rem;
+        border-radius: 10px;
+        background-color: rgba(255, 255, 255, 0.9);
+        color: rgb(41, 43, 45);
+        font-size: 1rem;
+        font-weight: bold;
+        transition: 0.2s all ease-in-out;
+        border: none;
+        &:hover {
+            background-color: white;
+            box-shadow: 0 0 50px rgba(white, 0.5);
+            cursor: pointer;
+        }
+        &:focus {
+            outline: 1px dashed white;
+        }
+    }
+    input:hover {
+        cursor: text;    
+    }
 }
