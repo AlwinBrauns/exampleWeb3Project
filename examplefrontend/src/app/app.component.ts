@@ -23,7 +23,7 @@ export class AppComponent implements OnInit, OnDestroy {
     this.getSayHello()
   }
   connectWithWeb3Wallet() {
-    this.web3conService.setErrorFixed()
+    this.error = undefined
     this.web3conService.initWeb3()
   }
   ngOnInit(): void {

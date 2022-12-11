@@ -2,14 +2,14 @@ import { Injectable } from '@angular/core';
 import Web3 from 'web3';
 import SayHelloTo from '../../artifacts/contracts/SayHelloTo.sol/SayHelloTo.json'
 import Addresses from '../../adresses.json'
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class Web3conService {
   web3?: Web3 = new Web3()
-  error$: BehaviorSubject<Error | undefined> = new BehaviorSubject<Error | undefined>(undefined)
+  error$: Subject<Error> = new Subject<Error>()
   contract?: any
   accounts?: string[]
   Contract = this.web3!.eth.Contract
@@ -49,9 +49,5 @@ export class Web3conService {
 
   getError(): Observable<Error | undefined> {
     return this.error$.asObservable()
-  }
-
-  setErrorFixed() {
-    this.error$.next(undefined)
   }
 }
