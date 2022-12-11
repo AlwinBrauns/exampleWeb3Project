@@ -1,13 +1,18 @@
-# Sample Hardhat Project
+# Example Project for Web3 with Angular
 
-This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, and a script that deploys that contract.
+This project shows how you can interact with ethereum smart contracts!
 
-Try running some of the following tasks:
+The project uses: 
+- Hardhat
+- Web3Js
+- Angular
 
-```shell
-npx hardhat help
-npx hardhat test
-REPORT_GAS=true npx hardhat test
-npx hardhat node
-npx hardhat run scripts/deploy.js
-```
+## Hardhat
+
+...
+
+## Frontend
+
+Look into [examplefrontend](./examplefrontend/README.md) for more information and tutorials.
+
+![example](./example.png)
