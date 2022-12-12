@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import Web3 from 'web3';
 import SayHelloTo from '../../artifacts/contracts/SayHelloTo.sol/SayHelloTo.json'
 import Addresses from '../../adresses.json'
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -13,13 +13,31 @@ export class Web3conService {
   contract?: any
   accounts?: string[]
   Contract = this.web3!.eth.Contract
+  currentAbi?: any
+  currentAddress?: any
 
   constructor() { 
     this.initWeb3()
   }
 
+  async initWeb3() {
+    if(!this.web3) return
+    //@ts-ignore
+    this.web3.setProvider(window.ethereum)
+    this.web3.eth.requestAccounts().then(accs => {
+      this.accounts = accs
+      this.callSayHello()
+    }).catch(error => {
+      this.error$.next(error)
+    })
+  } 
+
   setContract(abi: any, address: string) {
-    this.contract = new this.Contract(abi, address)
+    if(abi != this.currentAbi && address != this.currentAddress) {
+      this.contract = new this.Contract(abi, address)
+      this.currentAbi = abi
+      this.currentAddress = address
+    }
   }
 
   async callSayHello() {
@@ -33,19 +51,17 @@ export class Web3conService {
     this.contract.methods.changeTo(to).send({
       from: this.accounts[0]
     }).on('receipt', clbk)
-  } 
-  
-  async initWeb3() {
-    if(!this.web3) return
-    //@ts-ignore
-    this.web3.setProvider(window.ethereum)
-    this.web3.eth.requestAccounts().then(accs => {
-      this.accounts = accs
-      this.callSayHello()
-    }).catch(error => {
-      this.error$.next(error)
-    })
-  } 
+  }
+
+  subscribeToChangeToEvent(dataClbk: (data:any) => any) {
+    this.setContract(SayHelloTo.abi, Addresses.sayHelloTo)
+    this.contract.events.ToChange({
+      filter: {
+        value: []
+      },
+      //fromBlock: 0
+    }).on('data', (data:any) => dataClbk(data))
+  }
 
   getError(): Observable<Error | undefined> {
     return this.error$.asObservable()

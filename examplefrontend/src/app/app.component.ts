@@ -1,5 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Validators, FormGroup, FormControl} from '@angular/forms';
+import { Subscription } from 'rxjs';
 import { Web3conService } from './services/web3con.service';
 
 
@@ -12,6 +13,7 @@ export class AppComponent implements OnInit, OnDestroy {
   title?: string 
   from?: string
   error?: Error
+  web3ErrorSubscription!: Subscription
  
   changeTo: FormGroup = new FormGroup({
     to: new FormControl('')
@@ -21,19 +23,23 @@ export class AppComponent implements OnInit, OnDestroy {
       Validators.required
     ])
     this.getSayHello()
+    this.web3conService.subscribeToChangeToEvent((data) => {
+      this.title = "Hello " + data.returnValues.to
+    })
   }
   connectWithWeb3Wallet() {
     this.error = undefined
     this.web3conService.initWeb3()
   }
   ngOnInit(): void {
-    this.web3conService.getError().subscribe(
+    this.web3ErrorSubscription = this.web3conService.getError().subscribe(
       error => {
         this.error = error
       }
     )
   }
   ngOnDestroy(): void {
+    this.web3ErrorSubscription.unsubscribe()
   }
   getSayHello() {
     this.web3conService.callSayHello().then((msg: string) => {
@@ -51,7 +57,10 @@ export class AppComponent implements OnInit, OnDestroy {
     if(this.changeTo.controls['to'].valid) {
       this.web3conService.sendChangeTo(
         this.changeTo.controls['to'].value,
-        () => this.getSayHello()
+        () => {
+          this.getSayHello()
+          this.changeTo.reset() 
+        }
       )
     }else {
       console.warn("Invalid Input")
