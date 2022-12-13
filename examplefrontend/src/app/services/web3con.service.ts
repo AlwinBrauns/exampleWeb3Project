@@ -26,7 +26,6 @@ export class Web3conService {
     this.web3.setProvider(window.ethereum)
     this.web3.eth.requestAccounts().then(accs => {
       this.accounts = accs
-      this.callSayHello()
     }).catch(error => {
       this.error$.next(error)
     })
@@ -56,7 +55,7 @@ export class Web3conService {
   subscribeToChangeToEvent(dataClbk: (data:any) => any) {
     this.setContract(SayHelloTo.abi, Addresses.sayHelloTo)
     this.contract.events.ToChange({
-      fromBlock: 0
+      //fromBlock: 0
     }, (error: Error, data: any) => {
       dataClbk(data)
     })
