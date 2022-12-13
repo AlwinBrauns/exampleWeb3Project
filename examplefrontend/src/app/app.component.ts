@@ -24,6 +24,7 @@ export class AppComponent implements OnInit, OnDestroy {
     ])
     this.getSayHello()
     this.web3conService.subscribeToChangeToEvent((data) => {
+      console.log(data)
       this.title = "Hello " + data.returnValues.to
     })
   }

@@ -56,11 +56,10 @@ export class Web3conService {
   subscribeToChangeToEvent(dataClbk: (data:any) => any) {
     this.setContract(SayHelloTo.abi, Addresses.sayHelloTo)
     this.contract.events.ToChange({
-      filter: {
-        value: []
-      },
-      //fromBlock: 0
-    }).on('data', (data:any) => dataClbk(data))
+      fromBlock: 0
+    }, (error: Error, data: any) => {
+      dataClbk(data)
+    })
   }
 
   getError(): Observable<Error | undefined> {
