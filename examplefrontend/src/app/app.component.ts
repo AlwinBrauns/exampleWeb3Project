@@ -22,22 +22,23 @@ export class AppComponent implements OnInit, OnDestroy {
     this.changeTo.controls['to'].setValidators([
       Validators.required
     ])
-    this.getSayHello()
-    this.web3conService.subscribeToChangeToEvent((data) => {
-      console.log(data)
-      this.title = "Hello " + data.returnValues.to
-    })
   }
   connectWithWeb3Wallet() {
     this.error = undefined
     this.web3conService.initWeb3()
   }
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     this.web3ErrorSubscription = this.web3conService.getError().subscribe(
       error => {
         this.error = error
       }
     )
+    await this.web3conService.initWeb3()
+    this.getSayHello()
+    this.web3conService.subscribeToChangeToEvent((data) => {
+      console.log(data)
+      this.title = "Hello " + data.returnValues.to
+    })
   }
   ngOnDestroy(): void {
     this.web3ErrorSubscription.unsubscribe()

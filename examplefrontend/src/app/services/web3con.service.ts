@@ -8,33 +8,32 @@ import { Observable, Subject } from 'rxjs';
   providedIn: 'root'
 })
 export class Web3conService {
-  web3?: Web3 = new Web3()
+  web3?: Web3
   error$: Subject<Error> = new Subject<Error>()
   contract?: any
   accounts?: string[]
-  Contract = this.web3!.eth.Contract
   currentAbi?: any
   currentAddress?: any
 
-  constructor() { 
-    this.initWeb3()
+  constructor() {
   }
 
   async initWeb3() {
-    if(!this.web3) return
+    if(this.web3 && this.web3.currentProvider) return
     //@ts-ignore
-    this.web3.setProvider(window.ethereum)
-    this.web3.eth.requestAccounts().then(accs => {
+    await window.ethereum.request({ method: 'eth_requestAccounts' }).then(accs => {
+      //@ts-ignore
+      this.web3 = new Web3(window.ethereum)
+      console.log(accs)
       this.accounts = accs
-      this.callSayHello()
-    }).catch(error => {
+    }).catch((error: Error) => {
       this.error$.next(error)
     })
   } 
 
   setContract(abi: any, address: string) {
     if(abi != this.currentAbi && address != this.currentAddress) {
-      this.contract = new this.Contract(abi, address)
+      this.contract = new this.web3!.eth.Contract(abi, address)
       this.currentAbi = abi
       this.currentAddress = address
     }
