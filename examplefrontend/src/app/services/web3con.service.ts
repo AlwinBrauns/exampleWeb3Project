@@ -8,26 +8,28 @@ import { Observable, Subject } from 'rxjs';
   providedIn: 'root'
 })
 export class Web3conService {
-  web3?: Web3 = new Web3()
+  web3!: Web3
   error$: Subject<Error> = new Subject<Error>()
   contract?: any
   accounts?: string[]
-  Contract = this.web3!.eth.Contract
+  Contract
   currentAbi?: any
   currentAddress?: any
 
   constructor() { 
     this.initWeb3()
+    this.Contract = this.web3.eth.Contract
   }
 
-  async initWeb3() {
-    if(!this.web3) return
+  initWeb3() {
     //@ts-ignore
-    this.web3.setProvider(window.ethereum)
-    this.web3.eth.requestAccounts().then(accs => {
+    this.web3 = new Web3(window.ethereum)
+    this.web3.eth.requestAccounts((error, accs) => {
+      if(error) {
+        this.error$.next(error)
+        return
+      }
       this.accounts = accs
-    }).catch(error => {
-      this.error$.next(error)
     })
   } 
 
